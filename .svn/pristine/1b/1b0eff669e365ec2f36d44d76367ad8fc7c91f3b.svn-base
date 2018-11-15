@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>商品详情</title>
+    <link rel="stylesheet" type="text/css" href="../css/hui.css" />
+</head>
+<body>
+<header class="hui-header">
+    <div id="hui-back"></div>
+    <h1>商品详情</h1>
+</header>
+<div class="hui-wrap">
+    <div style="width:100%;">
+        <div class="hui-swipe" id="swipe2">
+            <div class="hui-swipe-items"></div>
+        </div>
+    </div>
+    <ul class="hui-media-list" style="padding: 10px;">
+        <li>商品标题: iphon5一窝</li>
+        <li style="margin-top: -9px;">一口价: 87元</li>
+        <li style="margin-top: -9px;">数量: 88件</li>
+    </ul>
+</div>
+<script src="../js/hui.js" type="text/javascript" charset="utf-8"></script>
+<script src="../js/hui-swipe.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+    //加载远程图片示例
+    hui.get(
+        'http://hoa.hcoder.net/index.php?user=hcoder&pwd=hcoder&m=lunbo',
+        function(res){
+            var arr  = res.split('--hcSplitor--');
+            for(var i = 0; i < arr.length; i++){
+                var div = document.createElement('div')
+                div.setAttribute('class', 'hui-swipe-item');
+                div.innerHTML = arr[i];
+                hui(div).appendTo('#swipe2 .hui-swipe-items');
+            }
+            var swipe2 = new huiSwpie('#swipe2');
+            swipe2.run();
+        },
+        function(){
+            hui.toast('读取远程数据失败');
+        }
+    );
+</script>
+</body>
+</html>

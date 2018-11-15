@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>商品管理</title>
+    <link rel="stylesheet" type="text/css" href="../css/hui.css" />
+</head>
+<body>
+<header class="hui-header">
+    <div id="hui-back"></div>
+    <h1>商品管理</h1>
+    <div id="hui-header-menu" onclick="hui.showSlideMenu();"></div>
+</header>
+<div class="hui-wrap">
+    <div id="refreshContainer" class="hui-refresh">
+        <div class="hui-refresh-icon"></div>
+        <div class="hui-refresh-content">
+            <ul id="list2" class="hui-media-list" style="padding:10px;">
+                <!--<li>-->
+                <!--<div class="hui-media-list-img"><img src="../img/imglist/1.jpg" /></div>-->
+                <!--<div id="toDetails" class="hui-media-content">-->
+                <!--<h1>商品标题.....</h1>-->
+                <!--<p>价格：￥120.00</p>-->
+                <!--</div>-->
+                <!--<div class="hui-media-button">-->
+                <!--<span style="line-height: 58px;" class="hui-button-small hui-primary">上架</span>-->
+                <!--</div>-->
+                <!--</li>-->
+            </ul>
+        </div>
+    </div>
+</div>
+<!-- 菜单 dom 结构 -->
+<div class="hui-slide-menu">
+    <ul>
+        <div id="list3">
+            <li>商超</li>
+            <li>家政</li>
+            <li>餐饮</li>
+        </div>
+        <li style="padding-top:30px;">
+            <button type="button" class="hui-button hui-button-large" onclick="hui.closeSlideMenu();">返回</button>
+        </li>
+    </ul>
+</div>
+<script type="text/javascript" src="../js/hui.js" charset="UTF-8"></script>
+<script src="../js/hui-refresh-load-more.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+    // redady();
+    listArray();
+    function listArray(){
+        hui.getJSON(
+            baseUrl + '/goods/category',
+            function (msg){
+                if(msg.code=='000'){
+                    var list = msg.result;
+                    var html = "";
+                    for (var i = 0; i < list.length; i++) {
+                        var record = list[i];
+                        html +='<li onclick="fourl('+record.id+')">'+record.title+'</li>';
+                    }
+                    hui('#list3').html(html);
+                }
+            }
+        )
+    }
+    function fourl(a) {
+        hui.getJSON(
+            baseUrl + '/goods/index?catId='+a,
+            function (msg){
+                console.log(msg)
+                if(msg.code=='000'){
+                    if(msg.result.length<8){
+                        hui.endLoadMore(true,'');
+                    }
+                    var list = msg.result;
+                    var html = "";
+                    for (var i = 0; i < list.length; i++) {
+                        var record = list[i];
+                        html += '<li><div class="hui-media-list-img"><img src="' + record.goods_thumb + '"/></div>';
+                        html += '<div onclick="toDetails('+record.goods_id+')" class="hui-media-content"><h1 class="hui-slue">' + record.goods_title + '</h1>';
+                        html += '<p>￥' + record.priceStr + '</p></div>';
+                        if (record.is_on == 0 && record.goods_status == 1) {
+                            html += '<div onclick="goodsOn(' + record.goods_id + ')" class="hui-media-button"><span style="line-height: 58px;" class="hui-button-small hui-primary">上架</span>';
+                        }
+                        if (record.goods_status == 0) {
+                            html += '<div class="hui-media-button"><span></span>';
+                        }
+                        if (record.is_on == 1) {
+                            html += '<div onclick="goodsOff(' + record.goods_id + ')" class="hui-media-button"><span style="line-height: 58px;background-color: #ccc !important;" class="hui-button-small hui-primary">下架</span>';
+                        }
+                        html += "</div></li>";
+                    }
+                    hui('#list2').html(html);
+                    hui.closeSlideMenu();
+                }
+            }
+        )
+    }
+    function goodsOn(a) {
+        hui.confirm('该商品确定要上架吗？', ['取消','确定'], function(){
+            hui.postJSON(
+                baseUrl + '/goods/on',
+                {goodsId:a},
+                function (msg) {
+                    hui.toast(msg.msg);
+                    redady();
+                }
+            )
+        },function(){
+            console.log('取消后执行...');
+        });
+    }
+    function goodsOff(a) {
+        hui.confirm('该商品确定要下架吗？', ['取消','确定'], function(){
+            hui.postJSON(
+                baseUrl + '/goods/off',
+                {goodsId:a},
+                function (msg) {
+                    hui.toast(msg.msg);
+                    redady();
+                }
+            )
+        },function(){
+            console.log('取消后执行...');
+        });
+    }
+    function redady() {
+        hui.getJSON(
+            baseUrl + '/goods/index?pageNumber=1',
+            function (msg) {
+                if (msg.code == '000') {
+                    var list = msg.result;
+                    var html = "";
+                    for (var i = 0; i < list.length; i++) {
+                        var record = list[i];
+                        html += '<li><div class="hui-media-list-img"><img src="' + record.goods_thumb + '"/></div>';
+                        html += '<div onclick="toDetails('+record.goods_id+')" class="hui-media-content"><h1 class="hui-slue">' + record.goods_title + '</h1>';
+                        html += '<p>￥' + record.priceStr + '</p></div>';
+                        if (record.is_on == 0 && record.goods_status == 1) {
+                            html += '<div onclick="goodsOn(' + record.goods_id + ')" class="hui-media-button"><span style="line-height: 58px;" class="hui-button-small hui-primary">上架</span>';
+                        }
+                        if (record.goods_status == 0) {
+                            html += '<div class="hui-media-button"><span></span>';
+                        }
+                        if (record.is_on == 1) {
+                            html += '<div onclick="goodsOff(' + record.goods_id + ')" class="hui-media-button"><span style="line-height: 58px;background-color: #ccc !important;" class="hui-button-small hui-primary">下架</span>';
+                        }
+                        html += "</div></li>";
+                    }
+                    hui('#list2').html(html);
+                    hui.endRefresh();
+                    pageNumber = 2;
+                    hui.resetLoadMore();
+                    // if(hui.refreshNumber<1){hui.closeLoading('加载中');}
+                }
+            },
+            function (e) {
+                hui.iconToast('读取消息失败', 'warn');
+            }
+        );
+    }
+    // 下拉刷新
+    hui.refresh('#refreshContainer',redady);
+    hui.loadMore(getMore);
+    var pageNumber = 1;
+    function getMore(){
+        hui.getJSON(
+            baseUrl + '/goods/index?pageNumber='+pageNumber,
+            function (msg) {
+                if(msg.result.length=='0'){
+                    hui.endLoadMore(true,'到头了...');
+                    return true;
+                }
+                if (msg.code == '000') {
+                    var list = msg.result;
+                    for (var i = 0; i < list.length; i++) {
+                        var record = list[i];
+                        var li = document.createElement('li');
+                        li.innerHTML += '<div class="hui-media-list-img"><img src="' + record.goods_thumb + '"/></div>';
+                        li.innerHTML += '<div onclick="toDetails('+record.goods_id+')" class="hui-media-content"><h1 class="hui-slue">' + record.goods_title + '</h1><p>￥' + record.priceStr + '</p></div>';
+                        if (record.is_on == 0 && record.goods_status == 1) {
+                            li.innerHTML += '<div onclick="goodsOn(' + record.goods_id + ')" class="hui-media-button"><span style="line-height: 58px;" class="hui-button-small hui-primary">上架</span>';
+                        }
+                        if (record.goods_status == 0) {
+                            li.innerHTML += '<div class="hui-media-button"><span></span>';
+                        }
+                        if (record.is_on == 1) {
+                            li.innerHTML += '<div onclick="goodsOff(' + record.goods_id + ')" class="hui-media-button"><span style="line-height: 58px;background-color: #ccc !important;" class="hui-button-small hui-primary">下架</span>';
+                        }
+                        li.innerHTML += "</div>";
+                        hui(li).appendTo('#list2');
+                    }
+                    hui.endLoadMore();
+                    pageNumber++;
+                }
+            },
+            function (e) {
+                hui.iconToast('读取消息失败', 'warn');
+            }
+        );
+    }
+    /* slide menu */
+    hui.slideMenu();
+    function toDetails(a) {
+        hui.open('goodsDetails.html?goodsId='+a,{},true);
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<title>修改密码</title>
+	<link rel="stylesheet" type="text/css" href="../css/hui.css" />
+</head>
+<body style="background:#FCFCFC;">
+	<header class="hui-header">
+	    <div id="hui-back"></div>
+	    <h1 style="width:auto;padding-left: 0px;">修改密码</h1>
+	</header>
+	<div class="hui-wrap">
+	    <form style="padding:28px 10px;" class="hui-form" id="pwdForm">
+	        <div class="hui-form-items">
+	        	<div class="hui-form-items-title">新密码</div>
+	            <input type="password" class="hui-input hui-input-clear" name="password" checkType="string" checkData="6,32" checkMsg="请输入6-32位密码"/>
+	        </div>
+	        <div class="hui-form-items">
+	        	<div class="hui-form-items-title">密码确认</div>
+	            <input type="password" class="hui-input" name="password2" checkType="string" checkData="6,32" checkMsg="请输入6-32位密码"/>
+	        </div>
+	        
+	        <div style="padding:10px; padding-top:10px;">
+		        <button type="button" class="hui-button hui-button-large hui-success" id="submitBtn">保存</button>
+		    </div>
+	    </form>
+	</div>
+	<script type="text/javascript" src="../js/hui.js"></script>
+	<script type="text/javascript" src="../js/hui-form.js"></script>
+	<script type="text/javascript">
+		hui('#submitBtn').click(function(){
+		    var res = huiFormCheck('#pwdForm');
+		    //提交
+		    if(res){
+		    	var data = hui.getFormData('#pwdForm');
+		    	if(data.password!=data.password2){
+		    		hui.iconToast("两次密码输入不一致" ,'warn');
+		    		return false;
+		    	}
+		    	
+		    	hui.postJSON(
+				    baseUrl + '/user/updatePwd',
+				    data,
+				    function(resp){
+				    	if(resp.code=='000'){
+				    		hui.upToast(resp.msg);
+				    		hui.back();
+				    	}else{
+				    		hui.iconToast(resp.msg, 'warn');
+				    	}
+				    },
+				    function(e){
+				        hui.iconToast('保存失败', 'warn');
+				    }
+				);
+		    }
+		});
+	</script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<title>商品管理</title>
+	<link rel="stylesheet" type="text/css" href="../css/hui.css" />
+</head>
+<body>
+<header class="hui-header">
+	<div id="hui-back"></div>
+	<h1>商品管理</h1>
+	<div id="hui-header-menu" onclick="hui.showSlideMenu();"></div>
+</header>
+<div class="hui-wrap">
+	<div id="refreshContainer" class="hui-refresh">
+		<div class="hui-refresh-icon"></div>
+		<div class="hui-refresh-content">
+			<ul class="hui-media-list" style="padding:10px;">
+				<li>
+					<div class="hui-media-list-img"><img src="../img/medialist/1.jpg" /></div>
+					<div id="toDetails" class="hui-media-content">
+						<h1>商品标题.....</h1>
+						<p>价格：¥120.00</p>
+					</div>
+					<div class="hui-media-button">
+						<span style="line-height: 58px;" class="hui-button-small hui-primary">上架</span>
+					</div>
+				</li>
+				<li>
+					<div class="hui-media-list-img"><img src="../img/medialist/2.jpg" /></div>
+					<div class="hui-media-content">
+						<h1>商品标题.....</h1>
+						<p>价格：¥120.00</p>
+					</div>
+					<div class="hui-media-button">
+						<span style="line-height: 58px;" class="hui-button-small hui-primary">上架</span>
+					</div>
+				</li>
+				<li>
+					<div class="hui-media-list-img"><img src="../img/medialist/3.jpg" /></div>
+					<div class="hui-media-content">
+						<h1>商品标题.....</h1>
+						<p>价格：¥120.00</p>
+					</div>
+					<div class="hui-media-button">
+						<span style="line-height: 58px;" class="hui-button-small hui-primary">上架</span>
+					</div>
+				</li>
+			</ul>
+		</div>
+	</div>
+</div>
+<!-- 菜单 dom 结构 -->
+<div class="hui-slide-menu">
+	<ul>
+		<li>商超</li>
+		<li>家政</li>
+		<li>餐饮</li>
+		<li style="padding-top:30px;">
+			<button type="button" class="hui-button hui-button-large" onclick="hui.closeSlideMenu();">返回</button>
+		</li>
+	</ul>
+</div>
+<script type="text/javascript" src="../js/hui.js" charset="UTF-8"></script>
+<script src="../js/hui-refresh-load-more.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+	hui.refresh('#refreshContainer',getData)
+	function getData(){
+        hui.endRefresh();
+
+	}
+    /* slide menu */
+    hui.slideMenu();
+    hui('#toDetails').click(function(){
+        hui.open('goodsDetails.html');
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<title>用户中心</title>
+	<link rel="stylesheet" type="text/css" href="../css/hui.css" />
+	<style>
+		.my-banner{
+			background-color: #619EDD;
+			height: 200px;
+			position: relative;
+			text-align:center;
+			width: 100%;
+		}
+		
+		.my-banner img {
+	        width: 66px;
+	        border-radius:50%;
+	        margin:0px;
+	        position: absolute;
+	        top: 50%;
+	        left: 50%;
+	        margin-top: -25px; /* 高度的一半 */
+	        margin-left: -25px; /* 宽度的一半 */
+	        display: block;
+	    }
+		
+	</style>
+</head>
+<body>
+	<div class="hui-wrap my-banner" >
+		<div id="hui-back"></div>
+		<img src="../img/home.png" id="shopImg"/>
+	</div>
+	<div class="hui-wrap">
+	    <div class="hui-list" style="background:#FFFFFF;">
+	        <a style=" height:70px; ">
+	    		<div class="hui-list-text" style="height:60px; line-height:60px;">
+	    			<div class="hui-list-text-content">店铺名称：<span id="spName">未开通</span></div>
+	    		</div>
+	    	</a>
+	    	<a>
+	    		<div class="hui-list-text">
+	    			<div class="hui-list-text-content">注册时间：<span id="regDate">未开通</span></div>
+	    		</div>
+	    	</a>
+	    </div>
+	    <div class="hui-list" style="background:#FFFFFF; margin-top:28px;">
+	        <ul>
+	            <li>
+	            	<a href="javascript:hui.open('./shopInfo.html',{},true);">
+	            		<div class="hui-list-icons">
+			    			<img src="../img/index/msg.png" />
+			    		</div>
+			    		<div class="hui-list-text">
+			    			店铺信息
+			    			<div class="hui-list-info">
+			    				<span class="hui-icons hui-icons-right"></span>
+			    			</div>
+			    		</div>
+	            	</a>
+	           	</li>
+	            <li>
+	            	<a href="javascript:void(0);" id="checkPwd">
+	            		<div class="hui-list-icons">
+			    			<img src="../img/index/btn.png" />
+			    		</div>
+			    		<div class="hui-list-text">
+			    			修改密码
+			    			<div class="hui-list-info">
+			    				<span class="hui-icons hui-icons-right"></span>
+			    			</div>
+			    		</div>
+	            	</a>
+	           	</li>
+	        </ul>
+	    </div>
+	    <div style="background:#FFFFFF; margin-top:28px;">
+	        <button type="button" class="hui-button hui-button-large" onclick="logout();">
+	        	<span class="hui-icons hui-icons-logoff"></span>退出系统
+	       	</button>
+	    </div>
+	</div>
+	
+	<script type="text/javascript" src="../js/hui.js" charset="UTF-8"></script>
+	<script type="text/javascript">
+		hui.ready(function(){
+		    hui.getJSON(
+			    baseUrl + '/user/my',
+			    function(resp){
+			    	if(resp.code=='000'){
+			    		if(resp.img){
+			    			hui('#shopImg').attr("src", resp.img);
+			    		}
+			    		if(resp.name){
+			    			hui('#spName').html(resp.name);
+			    		}
+		    			if(resp.regDate){
+		    				hui('#regDate').html(resp.regDate);
+		    			}
+			    	}
+			    },
+			    function(e){
+			        hui.iconToast('查询失败', 'warn');
+			    }
+			);
+		});
+
+		hui('#checkPwd').click(function(){
+		    hui.prompt('<p style="font-weight:bold;">密码修改</p><span style="font-size:10px;">为了保障您的账户安全，请输入原密码</span>', ['取消','确定'], 
+		    	function(password){
+		        	hui.postJSON(
+					    baseUrl + '/user/checkOldPwd',
+					    {password:password},
+					    function(resp){
+					    	if(resp.code=='000'){
+					    		hui.dialogClose();
+				    			hui.open('./password.html',{},true);
+					    	}else{
+					    		hui.iconToast(resp.msg, 'warn');
+					    		return false;
+					    	}
+					    },
+					    function(e){
+					        hui.iconToast('查询失败', 'warn');
+					    }
+					);
+		    	}, '', '',
+		    	function(){
+		    		//console.log('您点击了取消')
+		    	}
+		    );
+		});
+		
+		function logout(){
+			hui.confirm('您确认退出登录吗？', ['取消','确定'], 
+				function(){
+		        	hui.postJSON(
+					    baseUrl + '/user/logout',
+					    function(msg){
+					    	toLogin();
+					    },
+					    function(e){
+					        toLogin();
+					    }
+					);
+		    	},
+		    	function(){
+		        	//console.log('取消后执行...');
+		    	}
+		    );
+		}
+		
+		function toLogin(){
+			localStorage.clear();
+	    	hui.open('../login.html',{},true)
+		}
+	</script>
+</body>
+</html>

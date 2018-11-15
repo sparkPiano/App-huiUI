@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>订单详情</title>
+    <link rel="stylesheet" type="text/css" href="../css/hui.css" />
+</head>
+<body>
+<header class="hui-header">
+    <div id="hui-back"></div>
+    <h1>订单详情</h1>
+    <div id="hui-header-menu"></div>
+</header>
+<div class="hui-wrap">
+    <ul class="hui-media-list">
+        <li id="payFor" style="background-color: #3388FF;color: white;"></li>
+        <li  style="margin-top: -9px;">
+            <div id="rpname"></div>
+            <div style="padding-right: 160px;" id="rpphone"></div>
+        </li>
+        <li id="rpaddr" style="margin-top: -20px;font-size: 12px;color:#9a9999;"></li>
+        <li style="margin-top: -9px;background-color: #F0EFF5;padding: 10px;">
+            <div style="width:35%;">
+                <img style="height:70px;" id="order_img" src="" alt="">
+            </div>
+            <div style="width:60%;">
+                <p style="margin-top: 5%;" id="order_title"></p>
+                <p style="color: red;font-size: 13px;margin-top: 5%;" id="prprict"></p>
+            </div>
+        </li>
+        <li></li>
+        <li class="fcolor" id="paytype"></li>
+        <li class="fcolor" id="shopTitle" style="margin-top: -10px;"></li>
+        <li class="fcolor" id="paytime" style="margin-top: -10px;"></li>
+        <li class="fcolor" id="expcompany" style="margin-top: -10px;"></li>
+        <li class="fcolor" id="expnum" style="margin-top: -10px;"></li>
+    </ul>
+</div>
+<script type="text/javascript" src="../js/hui.js" charset="UTF-8"></script>
+<script type="text/javascript">
+	var orderId = "";
+	var rpName = "";
+	var rpPhone = "";
+	var rpAddr = "";
+	var expcompany = "";
+	var expnum = "";
+
+    var meuns = ['收件人信息', '录入物流信息'];
+    var cancel = '关闭菜单';
+    hui('#hui-header-menu').click(function(){
+        hui.actionSheet(meuns, cancel, function(e){
+            console.log(e.index);
+            if(e.index=='0'){
+                hui.open('Recipient.html?orderId='+ orderId + '&rpName=' + rpName +"&rpPhone=" + rpPhone + "&rpAddr=" + rpAddr)
+            }
+            if(e.index=='1'){
+                hui.open('logistics.html?orderId='+ orderId+ "&expcompany=" + expcompany+ "&expnum=" + expnum)
+            }
+        });
+    });
+
+    hui.ready(function(){
+        orderId = getQueryString("orderId");
+        hui.getJSON(
+            baseUrl + '/order/info?orderId='+orderId,
+            function(resp){
+                console.log(resp)
+                if(resp.record.orderid){
+                    hui('#shopTitle').html('订单编号:&nbsp;'+resp.record.orderid);
+                }
+                if(resp.record.title){
+                    hui('#order_title').html(resp.record.title);
+                }
+                if(resp.record.img){
+                    hui('#order_img').attr("src", resp.record.img);
+                }
+                if(resp.record.pricestr){
+                    hui('#prprict').html('￥'+resp.record.pricestr+'元');
+                }
+                if(resp.record.paytype){
+                    hui('#paytype').html('支付方式:&nbsp;'+resp.record.paytype);
+                }else{
+                    hui('#paytype').css({display:'none'});
+                }
+                if(resp.record.rpname){
+                    hui('#rpname').html(resp.record.rpname);
+                    rpName = resp.record.rpname;
+                }
+                if(resp.record.rpphone){
+                    hui('#rpphone').html(+resp.record.rpphone);
+                    rpPhone = resp.record.rpphone;
+                }
+                if(resp.record.rpaddr){
+                    hui('#rpaddr').html('地址:&nbsp;'+resp.record.rpaddr);
+                    rpAddr = resp.record.rpaddr;
+                }
+                if(resp.record.expcompany){
+                    hui('#expcompany').html('物流公司:&nbsp;'+resp.record.expcompany);
+                    expcompany = resp.record.expcompany;
+                }
+                if(resp.record.expnum){
+                    hui('#expnum').html('物流单号:&nbsp;'+resp.record.expnum);
+                    expnum = resp.record.expnum;
+                }
+                if(resp.record.paytime){
+                    hui('#paytime').html('订单创建时间:&nbsp;'+resp.record.paytime);
+                }else{
+                    hui('#paytime').css({display:'none'});
+                }
+                if(resp.record.status=='0'){
+                    hui('#payFor').html('待付款');
+                }else if(resp.record.status=='1'){
+                    hui('#payFor').html('待发货');
+                }else if(resp.record.status=='2'){
+                    hui('#payFor').html('已发货');
+                }else if(resp.record.status=='3'){
+                    hui('#payFor').html('已送达');
+                }else if(resp.record.status=='4'){
+                    hui('#payFor').html('已完成');
+                }else if(resp.record.status=='5'){
+                    hui('#payFor').html('退款中');
+                }else if(resp.record.status=='6'){
+                    hui('#payFor').html('已退款');
+                }else if(resp.record.status=='7'){
+                    hui('#payFor').html('已取消');
+                }else{
+                    return '';
+                }
+            },
+            function(e){
+                hui.iconToast('查询失败', 'warn');
+            }
+        );
+    });
+</script>
+</body>
+</html>

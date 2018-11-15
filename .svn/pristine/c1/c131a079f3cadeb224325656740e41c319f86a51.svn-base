@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>订单详情</title>
+    <link rel="stylesheet" type="text/css" href="../css/hui.css" />
+</head>
+<body>
+<header class="hui-header">
+    <div id="hui-back"></div>
+    <h1>订单详情</h1>
+    <div id="hui-header-menu"></div>
+</header>
+<div class="hui-wrap">
+    <ul class="hui-media-list" style="margin-top: -3px;">
+        <li id="shopTitle"></li>
+        <li id="order_title" style="margin-top: -9px;"></li>
+        <li id="prprict" style="margin-top: -9px;"></li>
+        <li id="rpname" style="margin-top: -9px;"></li>
+        <li id="rpphone" style="margin-top: -9px;"></li>
+        <li id="rpaddr" style="margin-top: -9px;"></li>
+        <li id="paytime" style="margin-top: -9px;"></li>
+        <li id="paytype" style="margin-top: -9px;"></li>
+        <li id="payFor" style="margin-top: -9px;"></li>
+    </ul>
+</div>
+<script type="text/javascript" src="../js/hui.js" charset="UTF-8"></script>
+<script type="text/javascript">
+    var meuns = ['收件人信息', '录入物流单号'];
+    var cancel = '关闭菜单';
+    hui('#hui-header-menu').click(function(){
+        hui.actionSheet(meuns, cancel, function(e){
+            console.log(e.index);
+            if(e.index=='0'){
+                hui.open('Recipient.html')
+            }
+            if(e.index=='1'){
+                hui.open('order.html')
+            }
+        });
+    });
+    function getQueryString(e) {
+        var t = new RegExp("(^|&)" + e + "=([^&]*)(&|$)");
+        var a = window.location.search.substr(1).match(t);
+        if (a != null) return a[2];
+        return ""
+    }
+    hui.ready(function(){
+        var orderId = getQueryString("orderId");
+        hui.getJSON(
+            baseUrl + '/order/info?orderId='+orderId,
+            function(resp){
+                console.log(resp)
+                if(resp.record.orderid){
+                    hui('#shopTitle').html('订单编号:&nbsp;'+resp.record.orderid);
+                }
+                if(resp.record.title){
+                    hui('#order_title').html('订单标题:&nbsp;'+resp.record.title);
+                }
+                if(resp.record.pricestr){
+                    hui('#prprict').html('订单标题:&nbsp;'+resp.record.pricestr+'元');
+                }
+                if(resp.record.paytype){
+                    hui('#paytype').html('支付方式:&nbsp;'+resp.record.paytype);
+                }else{
+                    hui('#paytype').css({display:'none'});
+                }
+                if(resp.record.rpname){
+                    hui('#rpname').html('收货人姓名:&nbsp;'+resp.record.rpname);
+                }
+                if(resp.record.rpphone){
+                    hui('#rpphone').html('收货人电话:&nbsp;'+resp.record.rpphone);
+                }
+                if(resp.record.rpaddr){
+                    hui('#rpaddr').html('收货人地址:&nbsp;'+resp.record.rpaddr);
+                }
+                if(resp.record.paytime){
+                    hui('#paytime').html('订单创建时间:&nbsp;'+resp.record.paytime);
+                }else{
+                    hui('#paytime').css({display:'none'});
+                }
+                if(resp.record.status=='0'){
+                    hui('#payFor').html('订单状态:&nbsp;待付款');
+                }else if(resp.record.status=='1'){
+                    hui('#payFor').html('订单状态:&nbsp;待发货');
+                }else if(resp.record.status=='2'){
+                    hui('#payFor').html('订单状态:&nbsp;已发货');
+                }else if(resp.record.status=='3'){
+                    hui('#payFor').html('订单状态:&nbsp;已送达');
+                }else if(resp.record.status=='4'){
+                    hui('#payFor').html('订单状态:&nbsp;已完成');
+                }else if(resp.record.status=='5'){
+                    hui('#payFor').html('订单状态:&nbsp;退款中');
+                }else if(resp.record.status=='6'){
+                    hui('#payFor').html('订单状态:&nbsp;已退款');
+                }else if(resp.record.status=='7'){
+                    hui('#payFor').html('订单状态:&nbsp;已取消');
+                }else{
+                    return '';
+                }
+            },
+            function(e){
+                hui.iconToast('查询失败', 'warn');
+            }
+        );
+    });
+</script>
+</body>
+</html>

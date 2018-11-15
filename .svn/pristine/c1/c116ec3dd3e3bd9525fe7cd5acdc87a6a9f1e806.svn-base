@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>订单管理</title>
+    <link rel="stylesheet" type="text/css" href="../css/hui.css" />
+    <style>
+    	.greenTags > div{border-color:#31A990; color:#31A990;}
+    </style>
+</head>
+<body>
+<header class="hui-header">
+    <div id="hui-back"></div>
+    <div id="hui-header-sreach">
+        <div id="hui-header-sreach-icon"></div>
+        <form><input type="search" id="searchKey" onkeydown="if(event.keyCode==13)return false;" placeholder="请输入订单号查询" /></form>
+    </div>
+    <div class="hui-header-sreach-txt" onclick="clearSearch();">清空</div>
+    <div id="hui-header-menu" onclick="hui.showSlideMenu();"></div>
+</header>
+<div class="hui-wrap">
+    <div id="refreshContainer" class="hui-refresh">
+        <div class="hui-refresh-icon"></div>
+        <div class="hui-refresh-content">
+            <div id="list" class="hui-center-title hui-media-list">
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 菜单 dom 结构 -->
+<div class="hui-slide-menu">
+    <ul>
+        <li onclick="queryOrder('');">全部</li>
+        <li onclick="queryOrder(0);">待付款</li>
+        <li onclick="queryOrder(1);">待发货</li>
+        <li onclick="queryOrder(2);">已发货</li>
+        <li onclick="queryOrder(3);">已送达</li>
+        <li onclick="queryOrder(4);">已完成</li>
+        <li onclick="queryOrder(5);">退款中</li>
+        <li onclick="queryOrder(6);">已退款</li>
+        <li style="padding-top:30px;">
+            <button type="button" class="hui-button hui-button-large" onclick="hui.closeSlideMenu();">关闭</button>
+        </li>
+    </ul>
+</div>
+<script type="text/javascript" src="../js/hui.js" charset="UTF-8"></script>
+<script src="../js/hui-refresh-load-more.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+	var pageNumber = 1;
+	var orderId = "";
+	var orderStatus = "";
+	var more = false;
+	
+    function take(orderId) {
+        hui.confirm('确认接单吗？', ['取消','确定'], function(){
+            hui.postJSON(
+                baseUrl + '/order/take',
+                {orderId:orderId},
+                function (msg) {
+                    hui.toast(msg.msg);
+                    redady();
+                }
+            )
+        },function(){
+            console.log('取消后执行...');
+        });
+    }
+    
+    function confirm(b) {
+        hui.confirm('确认已送达吗？', ['取消','确定'], function(){
+            hui.postJSON(
+                baseUrl + '/order/confirm',
+                {orderId:b},
+                function (msg) {
+                    hui.toast(msg.msg);
+                    redady();
+                }
+            )
+        },function(){
+            console.log('取消后执行...');
+        });
+    }
+    
+    function refund(b) {
+        hui.confirm('确定退款吗？退款后不可撤销', ['取消','确定'], function(){
+            hui.postJSON(
+                baseUrl + '/order/refund',
+                {orderId:b},
+                function (msg) {
+                    hui.toast(msg.msg);
+                    redady();
+                }
+            )
+        },function(){
+           // console.log('取消后执行...');
+        });
+    }
+    
+    function loadOrderList(){
+    	pageNumber = 1;
+    	hui.getJSON(
+            baseUrl + '/order/index?pageNumber='+pageNumber+"&orderId="+orderId+"&status="+orderStatus,
+            function (msg) {
+            	if(msg.code=='000'){
+            		more = msg.more;
+            		
+	                var list = msg.result;
+	                var html = "";
+	                for (var i = 0; i < list.length; i++) {
+	                    var record = list[i];
+	                    html +='<div class="hui-list" style="margin-top:6px;"><a onclick="toOrder(\''+record.order_id+'\')" style="height:auto; height:80px; padding-bottom:8px;">';
+	                    html +='<div class="hui-list-icons" style="width:110px; height:80px;"><img src="'+record.thumb+'" /></div>';
+	                    html +='<div class="hui-list-text" style="height:79px; line-height:79px;"><div>'+record.order_title + '</div>';
+	                    html +='<div class="hui-list-info"><span class="hui-icons hui-icons-right"></span></div>';
+	                    html +='</div></a>';
+	                    html +='<div class="hui-list-text"> 实付款：¥ '+record.pricestr;
+	                    switch (record.order_status){
+	                    	case 0:
+	                    		html +=' | 待支付';
+	                    		break;
+	                    	case 1:
+	                    		html +=' | 待发货';
+	                    		html +='<div class="hui-tags" style="padding:5px 15px;"><div onclick="take(\''+record.order_id+'\')">接单</div></div>';
+	                    		break;
+	                    	case 2:
+	                    		html +=' | 已发货';
+	                    		html +='<div class="hui-tags" style="padding:5px 15px;"><div onclick="confirm(\''+ record.order_id+'\')">确认送达</div></div>';
+	                    		break;
+	                    	case 3:
+	                    		html +=' | 已送达';
+	                    		break;
+	                    	case 4:
+	                    		html +=' | 已完成';
+	                    		break;
+	                    	case 5:
+	                    		html +=' | 退款中';
+	                    		html +='<div class="hui-tags greenTags" style="padding:5px 15px;"><div onclick="refund(\''+record.order_id+'\')">退款</div></div>';
+	                    		break;
+	                    	case 6:
+	                    		html +=' | 已退款';
+	                    		break;
+	                    	case 7:
+	                    		html +=' | 已取消';
+	                    		break;
+	                    	default:
+	                    		break;
+	                    }
+	                    
+	                    html +='</div></div>';
+	                }
+	                hui('#list').html(html);
+	                pageNumber = 2;
+               }
+            	//结束刷新
+	            hui.endRefresh();
+	            //重置加载更多状态
+	            hui.resetLoadMore();
+            },
+            function (e) {
+                hui.closeLoading();
+	            hui.upToast('连接服务器失败！');
+	            hui.endRefresh();
+            }
+        );
+    }
+
+    /* slide menu */
+    hui.slideMenu();
+    // 下拉刷新
+    hui.refresh('#refreshContainer',loadOrderList);
+	hui.loadMore(getMore);
+	
+	function getMore(){
+		if(!more){
+			hui.endLoadMore(true,'我是有底线的');
+            return false;
+		}
+		
+	    hui.getJSON(
+            baseUrl + '/order/index?pageNumber='+pageNumber+"&orderId="+orderId+"&status="+orderStatus,
+            function (msg) {
+            	more = msg.more;
+            	if(!msg.more){
+                    hui.endLoadMore(true,'我是有底线的');
+                    return false;
+                }
+            	
+            	if(msg.code=='000'){
+	                var list = msg.result;
+	                var html = "";
+	                for (var i = 0; i < list.length; i++) {
+	                    var record = list[i];
+	                    html +='<div class="hui-list" style="margin-top:6px;"><a onclick="toOrder(\''+record.order_id+'\')" style="height:auto; height:80px; padding-bottom:8px;">';
+	                    html +='<div class="hui-list-icons" style="width:110px; height:80px;"><img src="'+record.thumb+'" /></div>';
+	                    html +='<div class="hui-list-text" style="height:79px; line-height:79px;"><div>'+record.order_title + '</div>';
+	                    html +='<div class="hui-list-info"><span class="hui-icons hui-icons-right"></span></div>';
+	                    html +='</div></a>';
+	                    html+='<div class="hui-list-text"> 实付款：¥ '+record.pricestr;
+	                    switch (record.order_status){
+	                    	case 0:
+	                    		html+=' | 待支付';
+	                    		break;
+	                    	case 1:
+	                    		html+=' | 待发货';
+	                    		html+='<div class="hui-tags" style="padding:5px 15px;"><div onclick="take(\''+record.order_id+'\')">接单</div></div>';
+	                    		break;
+	                    	case 2:
+	                    		html+=' | 已发货';
+	                    		html+='<div class="hui-tags" style="padding:5px 15px;"><div onclick="confirm(\''+ record.order_id+'\')">确认送达</div></div>';
+	                    		break;
+	                    	case 3:
+	                    		html+=' | 已送达';
+	                    		break;
+	                    	case 4:
+	                    		html+=' | 已完成';
+	                    		break;
+	                    	case 5:
+	                    		html+=' | 退款中';
+	                    		html+='<div class="hui-tags greenTags" style="padding:5px 15px;"><div onclick="refund(\''+record.order_id+'\')">退款</div></div>';
+	                    		break;
+	                    	case 6:
+	                    		html+=' | 已退款';
+	                    		break;
+	                    	case 7:
+	                    		html+=' | 已取消';
+	                    		break;
+	                    	default:
+	                    		break;
+	                    }
+	                    
+	                    html+='</div></div>';
+	                }
+	                var tmp =  hui("#list").html() + html;
+	                hui('#list').html(tmp);
+	                pageNumber++;
+                }
+            	
+            	hui.endLoadMore();
+            },
+            function (e) {
+                hui.iconToast('读取消息失败', 'warn');
+            }
+        );
+	}
+	
+	
+    function toOrder(a) {
+        hui.open('orderDetails.html?orderId='+a,{},true);
+    }
+    
+    //搜索监听
+    document.getElementById('searchKey').addEventListener('keyup', function(e){
+    	if(e.keyCode == 13){
+    		searchNow();
+    	}
+    });
+    
+    function searchNow(){
+	    document.activeElement.blur();
+	    var kwd = hui('#searchKey').val();
+	    kwd = kwd.trim();
+	    if(kwd.length < 1){
+	        hui.toast('请输入订单号查询');
+	        return;
+	    }
+	    
+	    pageNumber = 1;
+	    orderId = kwd;
+	    loadOrderList();
+	}
+    
+    //清空
+	function clearSearch(){
+	    hui('#searchKey').val('');
+	    pageNumber = 1;
+	    orderId = "";
+	    loadOrderList();
+	}
+	
+	//订单不同状态
+	function queryOrder(status){
+		pageNumber = 1;
+		orderStatus = status;
+		loadOrderList();
+		hui.closeSlideMenu();
+	}
+</script>
+</body>
+</html>

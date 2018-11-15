@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>录入物流信息</title>
+    <link rel="stylesheet" type="text/css" href="../css/hui.css" />
+</head>
+<body style="background:#FCFCFC;">
+<header class="hui-header">
+    <div id="hui-back"></div>
+    <h1 style="width:auto;padding-left: 0px;">录入物流信息</h1>
+</header>
+<div class="hui-wrap">
+    <form style="padding:28px 10px;" class="hui-form" id="orderForm">
+        <div class="hui-form-items">
+            <div class="hui-form-items-titleq">	物流公司：</div>
+            <input id="expcompany" type="text" class="hui-input" name="exp_company" id="company" placeholder="请输入物流公司" checkType="string" checkData="1,32" checkMsg="请输入物流公司"/>
+        </div>
+        <div class="hui-form-items">
+            <div class="hui-form-items-titleq">物流单号：</div>
+            <input id="expnum" type="number" class="hui-input" name="exp_num" id="exp_num" placeholder="请输入物流单号" checkType="string" checkData="1,128" checkMsg="请输入物流单号"/>
+        </div>
+
+        <div style="padding:10px; padding-top:10px;">
+            <button type="button" class="hui-button hui-button-large hui-success" id="submitBtn">保存</button>
+        </div>
+    </form>
+</div>
+<script type="text/javascript" src="../js/hui.js"></script>
+<script type="text/javascript" src="../js/hui-form.js"></script>
+<script type="text/javascript">
+    var orderId = "";
+
+    hui.ready(function(){
+        orderId = getQueryString("orderId");
+        hui('#expcompany').val(getQueryString("expcompany"));
+        hui('#expnum').val(getQueryString("expnum"));
+    });
+    hui('#submitBtn').click(function(){
+        var res = huiFormCheck('#orderForm');
+        //提交
+        if(res){
+            var data = hui.getFormData('#orderForm');
+            data['order_id'] = orderId;
+
+            hui.postJSON(
+                baseUrl + '/order/saveExpress',
+                data,
+                function(resp){
+                    if(resp.code=='000'){
+                        hui.upToast(resp.msg);
+                        hui.back();
+                    }else{
+                        hui.iconToast(resp.msg, 'warn');
+                    }
+                },
+                function(e){
+                    hui.iconToast('保存失败', 'warn');
+                }
+            );
+        }
+    });
+</script>
+</body>
+</html>

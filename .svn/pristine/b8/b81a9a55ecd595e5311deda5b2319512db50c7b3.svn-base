@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<title>商品管理</title>
+	<link rel="stylesheet" type="text/css" href="../css/hui.css" />
+</head>
+<body>
+	<header class="hui-header">
+	    <div id="hui-back"></div>
+	    <h1>商品管理</h1>
+	    <div id="hui-header-menu" onclick="hui.showSlideMenu();"></div>
+	</header>
+	<div class="hui-wrap">
+	    <div class="hui-media-list" style="padding:10px;">
+	        <ul>
+	            <li>
+	                <a href="javascript:hui.toast('hi...');">
+	                    <div class="hui-media-list-img"><img src="../img/medialist/1.jpg" /></div>
+	                    <div class="hui-media-content">
+	                        <h1>商品标题.....</h1>
+	                        <p>价格：¥120.00</p>
+	                    </div>
+	                </a>
+	            </li>
+	            <li>
+	                <a href="javascript:hui.toast('hi...');">
+	                    <div class="hui-media-list-img"><img src="../img/medialist/2.jpg" /></div>
+	                    <div class="hui-media-content">
+	                        <h1>商品标题.....</h1>
+	                        <p>价格：¥120.00</p>
+	                    </div>
+	                </a>
+	            </li>
+	            <li>
+	                <a href="javascript:hui.toast('hi...');">
+	                    <div class="hui-media-list-img"><img src="../img/medialist/3.jpg" /></div>
+	                    <div class="hui-media-content">
+	                        <h1>商品标题.....</h1>
+	                        <p>价格：¥120.00</p>
+	                    </div>
+	                </a>
+	            </li>
+	        </ul>
+	    </div>
+	</div>
+	<!-- 菜单 dom 结构 -->
+	<div class="hui-slide-menu">
+	    <ul>
+	        <li>商超</li>
+	        <li>家政</li>
+	        <li>餐饮</li>
+	        <li style="padding-top:30px;">
+	            <button type="button" class="hui-button hui-button-large" onclick="hui.closeSlideMenu();">返回</button>
+	        </li>
+	    </ul>
+	</div>
+	<script type="text/javascript" src="../js/hui.js" charset="UTF-8"></script>
+	<script src="../js/hui-refresh-load-more.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		/* slide menu */
+		hui.slideMenu();
+		//下拉刷新
+		/*hui.refresh('#refreshContainer', refresh);
+		function refresh(){
+	    if(hui.refreshNumber < 1){
+	    	hui.loading('加载中...');
+	    }
+	    hui.get(
+	        'http://hoa.hcoder.net/index.php?user=hcoder&pwd=hcoder&m=list1&page=1',
+	        function(res){
+	            var data = res.split('--hcSplitor--');
+	            var html = '';
+	            for(var i = 0; i < data.length; i++){
+	                html += '<a href="javascript:hui.toast(\'hi.....\');"><div class="hui-list-text">'+data[i]+'</div></a>';
+	            }
+	            hui('#list').html(html);
+	            hui.endRefresh();
+	            //关闭loading
+	            hui.loading('加载中...', true);
+	        },
+	        function(){
+	            hui.loading('加载中...', true);
+	            hui.toast('连接服务器失败！');
+	            hui.endRefresh();
+	        }
+	    );
+	}*/
+	</script>
+</body>
+</html>

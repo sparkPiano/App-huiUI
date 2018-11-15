@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>收件人信息</title>
+    <link rel="stylesheet" type="text/css" href="../css/hui.css" />
+</head>
+<body style="background:#FCFCFC;">
+<header class="hui-header">
+    <div id="hui-back"></div>
+    <h1 style="width:auto;padding-left: 0px;">收件人信息</h1>
+</header>
+<div class="hui-wrap">
+    <form style="padding:28px 10px;" class="hui-form" id="orderForm">
+        <div class="hui-form-items">
+            <div class="hui-form-items-titleq">收货人姓名：</div>
+            <input type="text" class="hui-input" name="rp_name" id="name" placeholder="请输入收货人姓名" checkType="string" checkData="1,32" checkMsg="请输入收货人姓名1-32个汉字"/>
+        </div>
+        <div class="hui-form-items">
+            <div class="hui-form-items-titleq">收货人电话：</div>
+            <input type="number" class="hui-input" name="rp_mobile" id="phone" placeholder="请输入收货人电话" checkType="phone" checkMsg="手机号码格式错误"/>
+        </div>
+        <div class="hui-form-items">
+            <div class="hui-form-items-titleq">收货人地址：</div>
+            <input type="text" class="hui-input" name="rp_addr" id="addr" checkType="string"  placeholder="请输入收货人地址" checkData="1,128" checkMsg="请输入收货人地址"/>
+        </div>
+
+        <div style="padding:10px; padding-top:10px;">
+            <button type="button" class="hui-button hui-button-large hui-success" id="submitBtn">保存</button>
+        </div>
+    </form>
+</div>
+<script type="text/javascript" src="../js/hui.js"></script>
+<script type="text/javascript" src="../js/hui-form.js"></script>
+<script type="text/javascript">
+	var orderId = "";
+	
+	hui.ready(function(){
+		orderId = getQueryString("orderId");
+		hui('#name').val(decodeURI(getQueryString("rpName")));
+		hui('#phone').val(decodeURI(getQueryString("rpPhone")));
+		hui('#addr').val(decodeURI(getQueryString("rpAddr")));
+	});
+
+    hui('#submitBtn').click(function(){
+        var res = huiFormCheck('#orderForm');
+        //提交
+        if(res){
+            var data = hui.getFormData('#orderForm');
+            data['order_id'] = orderId;
+            console.log(data)
+         
+            hui.postJSON(
+                baseUrl + '/order/updateRecip',
+                data,
+                function(resp){
+                    if(resp.code=='000'){
+                        hui.upToast(resp.msg);
+                        hui.back();
+                    }else{
+                        hui.iconToast(resp.msg, 'warn');
+                    }
+                },
+                function(e){
+                    hui.iconToast('保存失败', 'warn');
+                }
+            );
+        }
+    });
+</script>
+</body>
+</html>

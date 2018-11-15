@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>商品详情</title>
+    <link rel="stylesheet" type="text/css" href="../css/hui.css" />
+</head>
+<body>
+<header class="hui-header">
+    <div id="hui-back"></div>
+    <h1>商品详情</h1>
+</header>
+<div class="hui-wrap">
+    <div style="width:100%;">
+        <img id="titleImg" style="width:100%;" src="" alt="">
+    </div>
+    <ul class="hui-media-list">
+        <li class="fcolor" id="shopTitle"></li>
+        <li class="fcolor" id="one" style="margin-top: -10px;"></li>
+        <li class="fcolor" id="number" style="margin-top: -10px;"></li>
+    </ul>
+    <div id="img_1" style="width:100%;">
+        <img id="desc" style="width:100%;" src="" alt="">
+    </div>
+</div>
+<script src="../js/hui.js" type="text/javascript" charset="utf-8"></script>
+<script src="../js/hui-swipe.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+    function getQueryString(e) {
+        var t = new RegExp("(^|&)" + e + "=([^&]*)(&|$)");
+        var a = window.location.search.substr(1).match(t);
+        if (a != null) return a[2];
+        return ""
+    }
+    hui.ready(function(){
+        var goodsId = getQueryString("goodsId");
+        hui.getJSON(
+            baseUrl + '/goods/info?goodsId='+goodsId,
+            function(resp){
+                if(resp.code=='000'){
+                    if(resp.goods.goods_thumb){
+                        hui('#titleImg').attr("src", resp.goods.goods_thumb);
+                    }
+                    for(var i = 0; i<resp.desc.length;i++){
+                        var record = resp.desc[i];
+                        hui('#desc').attr("src", record.name);
+                    }
+                    if(resp.goods.goods_title){
+                        hui('#shopTitle').html('商品标题:&nbsp;'+resp.goods.goods_title);
+                    }
+                    if(resp.goods.priceStr){
+                        hui('#one').html('一口价:&nbsp;'+resp.goods.priceStr);
+                    }
+                    if(resp.goods.goods_stocks){
+                        hui('#number').html('数量:&nbsp;'+resp.goods.goods_stocks);
+                    }
+                }
+            },
+            function(e){
+                hui.iconToast('查询失败', 'warn');
+            }
+        );
+    });
+</script>
+</body>
+</html>

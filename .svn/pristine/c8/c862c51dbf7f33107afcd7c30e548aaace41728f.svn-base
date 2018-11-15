@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<title>订单列表</title>
+	<link rel="stylesheet" type="text/css" href="../css/hui.css" />
+</head>
+<body>
+	<header class="hui-header">
+	    <div id="hui-back"></div>
+	    <h1>订单管理</h1>
+	    <div id="hui-header-menu" onclick="hui.showSlideMenu();"></div>
+	</header>
+	<div class="hui-wrap">
+	    <div class="hui-center-title" style="margin-top:15px;">
+	    	<div class="hui-list" style="margin-top:6px;">
+		        <a href="javascript:hui.toast('Hello Hcoder UI !');" style="height:auto; height:80px; padding-bottom:8px;">
+		            <div class="hui-list-icons" style="width:110px; height:80px;">
+		                <img src="../img/gift.png" style="width:66px; margin:0px; border-radius:50%;" />
+		            </div>
+		            <div class="hui-list-text" style="height:79px; line-height:79px;">
+		   				订单1
+		                <div class="hui-list-info">
+		                    <span class="hui-icons hui-icons-right"></span>
+		                </div>
+		            </div>
+		        </a>
+		        <a href="javascript:hui.toast('Hello Hcoder UI !');">
+		            <div class="hui-list-text"> 价格：¥1350.00 </div>
+		        </a>
+	    	</div>
+	    	<div class="hui-list" style="margin-top:6px;">
+		        <a href="javascript:hui.toast('Hello Hcoder UI !');" style="height:auto; height:80px; padding-bottom:8px;">
+		            <div class="hui-list-icons" style="width:110px; height:80px;">
+		                <img src="../img/banner.png" style="width:66px; margin:0px; border-radius:50%;" />
+		            </div>
+		            <div class="hui-list-text" style="height:79px; line-height:79px;">
+		           		订单2
+		                <div class="hui-list-info">
+		                    <span class="hui-icons hui-icons-right"></span>
+		                </div>
+		            </div>
+		        </a>
+		        <a href="javascript:hui.toast('Hello Hcoder UI !');">
+		            <div class="hui-list-text"> 价格：¥1500.00</div>
+		        </a>
+	    	</div>
+	    </div>
+	</div>
+	<!-- 菜单 dom 结构 -->
+	<div class="hui-slide-menu">
+	    <ul>
+	        <li></li>
+	        <li>家政</li>
+	        <li>餐饮</li>
+	        <li style="padding-top:30px;">
+	            <button type="button" class="hui-button hui-button-large" onclick="hui.closeSlideMenu();">返回</button>
+	        </li>
+	    </ul>
+	</div>
+	<script type="text/javascript" src="../js/hui.js" charset="UTF-8"></script>
+	<script src="../js/hui-refresh-load-more.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		/* slide menu */
+		hui.slideMenu();
+		//下拉刷新
+		/*hui.refresh('#refreshContainer', refresh);
+		function refresh(){
+	    if(hui.refreshNumber < 1){
+	    	hui.loading('加载中...');
+	    }
+	    hui.get(
+	        'http://hoa.hcoder.net/index.php?user=hcoder&pwd=hcoder&m=list1&page=1',
+	        function(res){
+	            var data = res.split('--hcSplitor--');
+	            var html = '';
+	            for(var i = 0; i < data.length; i++){
+	                html += '<a href="javascript:hui.toast(\'hi.....\');"><div class="hui-list-text">'+data[i]+'</div></a>';
+	            }
+	            hui('#list').html(html);
+	            hui.endRefresh();
+	            //关闭loading
+	            hui.loading('加载中...', true);
+	        },
+	        function(){
+	            hui.loading('加载中...', true);
+	            hui.toast('连接服务器失败！');
+	            hui.endRefresh();
+	        }
+	    );
+	}*/
+	</script>
+</body>
+</html>

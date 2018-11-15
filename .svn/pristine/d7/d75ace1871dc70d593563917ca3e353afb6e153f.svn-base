@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>订单列表</title>
+    <link rel="stylesheet" type="text/css" href="../css/hui.css" />
+</head>
+<body>
+<header class="hui-header">
+    <div id="hui-back"></div>
+    <h1>订单管理</h1>
+    <div id="hui-header-menu" onclick="hui.showSlideMenu();"></div>
+</header>
+<div class="hui-wrap">
+    <div id="refreshContainer" class="hui-refresh">
+        <div class="hui-refresh-icon"></div>
+        <div class="hui-refresh-content">
+            <div id="list2" class="hui-center-title hui-media-list">
+                <!--<div class="hui-list" style="margin-top:6px;">-->
+                    <!--<a style="height:auto; height:80px; padding-bottom:8px;">-->
+                        <!--<div class="hui-list-icons" style="width:110px; height:80px;">-->
+                            <!--<img src="../img/banner.png" style="width:66px; margin:0px; border-radius:50%;"/>-->
+                        <!--</div>-->
+                        <!--<div class="hui-list-text" style="height:79px; line-height:79px;">订单1-->
+                            <!--<div class="hui-list-info">-->
+                                <!--<span class="hui-icons hui-icons-right"></span>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    <!--</a>-->
+                    <!--<div class="hui-list-text"> 价格：¥1350.00-->
+                        <!--<span style="margin-right: 10%;" class="hui-button-small hui-primary">退款</span>-->
+                    <!--</div>-->
+                <!--</div>-->
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 菜单 dom 结构 -->
+<div class="hui-slide-menu">
+    <ul>
+        <li></li>
+        <li>家政</li>
+        <li>餐饮</li>
+        <li style="padding-top:30px;">
+            <button type="button" class="hui-button hui-button-large" onclick="hui.closeSlideMenu();">返回</button>
+        </li>
+    </ul>
+</div>
+<script type="text/javascript" src="../js/hui.js" charset="UTF-8"></script>
+<script src="../js/hui-refresh-load-more.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+    function take(orderId) {
+        hui.confirm('确认接单吗？', ['取消','确定'], function(){
+            hui.postJSON(
+                baseUrl + '/order/take',
+                {orderId:orderId},
+                function (msg) {
+                    hui.toast(msg.msg);
+                    redady();
+                }
+            )
+        },function(){
+            console.log('取消后执行...');
+        });
+    }
+    function confirm(b) {
+        hui.confirm('确认已送达吗？', ['取消','确定'], function(){
+            hui.postJSON(
+                baseUrl + '/order/confirm',
+                {orderId:b},
+                function (msg) {
+                    hui.toast(msg.msg);
+                    redady();
+                }
+            )
+        },function(){
+            console.log('取消后执行...');
+        });
+    }
+    function refund(b) {
+        hui.confirm('确定退款吗？', ['取消','确定'], function(){
+            hui.postJSON(
+                baseUrl + '/order/refund',
+                {orderId:b},
+                function (msg) {
+                    hui.toast(msg.msg);
+                    redady();
+                }
+            )
+        },function(){
+            console.log('取消后执行...');
+        });
+    }
+    function redady() {
+        hui.getJSON(
+            baseUrl + '/order/index',
+            function (msg) {
+                console.log(msg)
+                var list = msg.result;
+                var html = "";
+                for (var i = 0; i < list.length; i++) {
+                    var record = list[i];
+                    html +='<div class="hui-list" style="margin-top:6px;"><a onclick="toOrder(\''+record.order_id+'\')" style="height:auto; height:80px; padding-bottom:8px;">';
+                    html +='<div class="hui-list-icons" style="width:110px; height:80px;"><img src="'+record.thumb+'" style="width:66px; margin:0px; border-radius:50%;"/></div>';
+                    html +='<div class="hui-list-text" style="height:79px; line-height:79px;">'+record.order_title+'';
+                    html +='<div class="hui-list-info"><span class="hui-icons hui-icons-right"></span></div>';
+                    html +='</div></a>';
+                    html +='<div class="hui-list-text"> 价格：¥'+record.pricestr+'';
+                    if(record.order_status==1){
+                        html +='<span onclick="take(\''+record.order_id+'\')" style="margin-right: 10%;" class="hui-button-smalal hui-primary">接单</span>';
+                    }
+                    if(record.order_status==2){
+                        html +='<span onclick="confirm(\''+ record.order_id+'\')" style="margin-right: 10%;" class="hui-button-smalal hui-primary">确认送达</span>';
+                    }
+                    if(record.order_status==5){
+                        html +='<span onclick="refund(\''+record.order_id+'\')" style="margin-right: 10%;" class="hui-button-smalal hui-primary">退款</span>';
+                    }
+                    html +='</div></div>';
+                }
+                hui('#list2').html(html);
+                hui.endRefresh();
+            },
+            function (e) {
+                hui.iconToast('读取消息失败', 'warn');
+            }
+        );
+    }
+
+    /* slide menu */
+    hui.slideMenu();
+    // 下拉刷新
+    hui.refresh('#refreshContainer',redady)
+    function toOrder(a) {
+        hui.open('orderDetails.html?orderId='+a,{},true);
+    }
+</script>
+</body>
+</html>
